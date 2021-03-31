@@ -68,6 +68,7 @@ Type
     FHostname         : String;
     FHeartbeatSecs    : Word;
     FMaxFrameSize     : Cardinal;
+    FChannelMax       : Cardinal;
     FLastHeartbeat    : TDateTime;
     FOnWireDebug      : TWireEvent;
     FOnDebug          : TDebugEvent;
@@ -121,6 +122,7 @@ Type
     Property Hostname         : String      read FHostname      write FHostname;
     Property HeartbeatSecs    : Word        read FHeartbeatSecs write FHeartbeatSecs;
     Property MaxFrameSize     : Cardinal    read FMaxFrameSize  write SetMaxFrameSize;
+    property ChannelMax       : Cardinal    read FChannelMax    write FChannelMax;
     Property OnWireDebug      : TWireEvent  read FOnWireDebug   write FOnWireDebug;
     Property OnDebug          : TDebugEvent read FOnDebug       write FOnDebug;
     Property LastHeartbeat    : TDateTime   read FLastHeartbeat;
@@ -231,6 +233,9 @@ procedure TAMQPConnection.Connect;
 var
   Frame: IAMQPFrame;
   Method: TAMQPMethod;
+  {$IFDEF FPC}
+  i : integer;
+  {$ENDIF}
 begin
   if IsOpen then
     raise AMQPException.Create('Already open');
@@ -243,7 +248,12 @@ begin
   FMainQueue := TAMQPQueue.Create;
 
   FTCP.Connect;
+  {$IFDEF FPC}
+  for i := 0 to Length(AMQP_Header) - 1 do
+    FTCP.IOHandler.Write(AMQP_Header[i]);
+  {$ELSE}
   FTCP.IOHandler.Write( AMQP_Header );
+  {$ENDIF}
 
   FThread.Free;
   FThread := TAMQPThread.Create( Self, FTCP, FMainQueue, FChannels, DumpMethod, DumpHeader, DumpFrame );
@@ -284,7 +294,7 @@ begin
 
   Method := TAMQPMethod.CreateMethod( AMQP_CONNECTION_TUNE_OK );
   Try
-    //Method.Field[ 'channel-max' ].AsShortUInt.Value := FChannelMax;
+    Method.Field[ 'channel-max' ].AsShortUInt.Value := FChannelMax;
     Method.Field[ 'frame-max' ].AsLongUInt.Value    := FMaxFrameSize;
     Method.Field[ 'heartbeat' ].AsShortUInt.Value   := FHeartbeatSecs;
     WriteMethod( 0, Method );
@@ -337,6 +347,7 @@ begin
   FIsOpen           := False;
   FHeartbeatSecs    := 180;
   FMaxFrameSize     := 131072;
+  FChannelMax       := 0;
   FServerDisconnected := False;
   FHeartbeatTimer   := {$IfDef FPC}TFPTimer{$Else}TTimer{$EndIf}.Create( nil );
   FHeartbeatTimer.Enabled  := False;

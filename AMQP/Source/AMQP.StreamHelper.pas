@@ -107,7 +107,7 @@ function TStreamHelper.GetAsString(AEncoding: TEncoding): String;
 var
   StringStream: TStringStream;
 begin
-  StringStream := TStringStream.Create( '', AEncoding );
+  StringStream := TStringStream.Create( ''{$IfNDef FPC}, AEncoding {$EndIf});
   Try
     StringStream.CopyFrom( Self, 0 );
     Result := StringStream.DataString;
@@ -207,7 +207,7 @@ procedure TStreamHelper.SetAsString(AEncoding: TEncoding; const Value: String);
 var
   StringStream: TStringStream;
 begin
-  StringStream := TStringStream.Create( Value, AEncoding );
+  StringStream := TStringStream.Create( Value{$IfNDef FPC}, AEncoding {$EndIf});
   Try
     Self.CopyFrom( StringStream, 0 );
   Finally

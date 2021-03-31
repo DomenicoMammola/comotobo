@@ -76,18 +76,18 @@ Type
     Function GetConsumers : TObjectList<TConsumer>;
 
     Procedure ExchangeDeclare( AExchangeName, AType: String; Arguments: TArguments;
-              APassive: Boolean = False; ADurable: Boolean = True; ANoWait: Boolean = False; AInternal: Boolean = false); overload;
+              const APassive: Boolean = False; const ADurable: Boolean = True; const ANoWait: Boolean = False; const AInternal: Boolean = false); overload;
     Procedure ExchangeDeclare( AExchangeName: String; AType: TExchangeType; Arguments: TArguments;
-              APassive: Boolean = False; ADurable: Boolean = True; ANoWait: Boolean = False; AInternal: Boolean = false); overload;
-    Procedure ExchangeDelete( AExchangeName: String; AIfUnused: Boolean = True; ANoWait: Boolean = False );
-    Procedure ExchangeBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean = False);
-    Procedure ExchangeUnBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean = False);
+              const APassive: Boolean = False; const ADurable: Boolean = True; const ANoWait: Boolean = False; const AInternal: Boolean = false); overload;
+    Procedure ExchangeDelete( AExchangeName: String; const AIfUnused: Boolean = True; const ANoWait: Boolean = False );
+    Procedure ExchangeBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean = False);
+    Procedure ExchangeUnBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean = False);
 
-    Procedure QueueDeclare( AQueueName: String; Arguments: TArguments; APassive: Boolean = False; ADurable: Boolean = True; AExclusive: Boolean = False;
-                            AAutoDelete: Boolean = False; ANoWait: Boolean = False);
-    Procedure QueueBind( AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean = False);
-    Procedure QueuePurge( AQueueName: String; ANoWait: Boolean = False );
-    Procedure QueueDelete( AQueueName: String; AIfUnused: Boolean = True; AIfEmpty: Boolean = True; ANoWait: Boolean = False );
+    Procedure QueueDeclare( AQueueName: String; Arguments: TArguments; const APassive: Boolean = False; const ADurable: Boolean = True; const AExclusive: Boolean = False;
+                            const AAutoDelete: Boolean = False; const ANoWait: Boolean = False);
+    Procedure QueueBind( AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean = False);
+    Procedure QueuePurge( AQueueName: String; const ANoWait: Boolean = False );
+    Procedure QueueDelete( AQueueName: String; const AIfUnused: Boolean = True; const AIfEmpty: Boolean = True; const ANoWait: Boolean = False );
     Procedure QueueUnBind( AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments);
 
     Procedure BasicQOS(APrefetchSize: Cardinal; APrefetchCount: Word; AGlobal: Boolean = False);
@@ -230,8 +230,8 @@ begin
 end;
 
 procedure TAMQPChannel.ExchangeDeclare( AExchangeName, AType: String; Arguments: TArguments;
-              APassive: Boolean = False; ADurable: Boolean = True; ANoWait: Boolean = False;
-              AInternal: Boolean = false);
+              const APassive: Boolean = False; const ADurable: Boolean = True; const ANoWait: Boolean = False;
+              const AInternal: Boolean = false);
 var
   Method: TAMQPMethod;
 begin
@@ -253,7 +253,7 @@ begin
   End;
 end;
 
-procedure TAMQPChannel.ExchangeBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean);
+procedure TAMQPChannel.ExchangeBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin
@@ -273,13 +273,13 @@ begin
 end;
 
 procedure TAMQPChannel.ExchangeDeclare(AExchangeName: String; AType: TExchangeType;
-          Arguments: TArguments; APassive, ADurable, ANoWait, AInternal: Boolean);
+          Arguments: TArguments; const APassive, ADurable, ANoWait, AInternal: Boolean);
 begin
   ExchangeDeclare( AExchangeName, ExchangeTypeStr[AType], Arguments, APassive, ADurable, ANoWait, AInternal);
 end;
 
 procedure TAMQPChannel.ExchangeDelete(AExchangeName: String;
-  AIfUnused: Boolean; ANoWait: Boolean);
+  const AIfUnused: Boolean; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin
@@ -297,7 +297,7 @@ begin
   End;
 end;
 
-procedure TAMQPChannel.ExchangeUnBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean);
+procedure TAMQPChannel.ExchangeUnBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin
@@ -544,7 +544,7 @@ begin
     MessageProperties.&Type.Value := 'String';
   end else
    MessageProperties := AMessageProperties;
-  StringStream := TStringStream.Create( AData, TEncoding.UTF8 );
+  StringStream := TStringStream.Create( AData{$IFNDEF FPC}, TEncoding.UTF8 {$ENDIF});
   Try
     BasicPublish( AExchange, ARoutingKey, StringStream, AMandatory, MessageProperties );
   Finally
@@ -651,7 +651,7 @@ begin
   End;
 end;
 
-procedure TAMQPChannel.QueueBind(AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean);
+procedure TAMQPChannel.QueueBind(AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin
@@ -672,8 +672,8 @@ begin
 end;
 
 procedure TAMQPChannel.QueueDeclare(AQueueName: String; Arguments: TArguments;
-  APassive: Boolean; ADurable: Boolean; AExclusive: Boolean;
-  AAutoDelete: Boolean; ANoWait: Boolean);
+  const APassive: Boolean; const ADurable: Boolean; const AExclusive: Boolean;
+  const AAutoDelete: Boolean; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin
@@ -695,8 +695,8 @@ begin
   End;
 end;
 
-procedure TAMQPChannel.QueueDelete(AQueueName: String; AIfUnused: Boolean;
-  AIfEmpty: Boolean; ANoWait: Boolean);
+procedure TAMQPChannel.QueueDelete(AQueueName: String; const AIfUnused: Boolean;
+  const AIfEmpty: Boolean; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin
@@ -715,7 +715,7 @@ begin
   End;
 end;
 
-procedure TAMQPChannel.QueuePurge(AQueueName: String; ANoWait: Boolean);
+procedure TAMQPChannel.QueuePurge(AQueueName: String; const ANoWait: Boolean);
 var
   Method: TAMQPMethod;
 begin

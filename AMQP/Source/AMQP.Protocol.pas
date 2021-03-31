@@ -13,7 +13,12 @@ Type
   End;
 
 Const
+  {$IFDEF FPC}
+  AMQP_Header: array [0.. 7] of Byte = (65, 77, 81, 80, 0, 0, 9, 1); //'AMQP' + #0 + #0 + #9 + #1
+  {$ELSE}
   AMQP_Header: TIdBytes = [65, 77, 81, 80, 0, 0, 9, 1]; //'AMQP' + #0 + #0 + #9 + #1
+  {$ENDIF}
+
 
   AMQP_CLASS_CONNECTION = 10;
   AMQP_CLASS_CHANNEL    = 20;

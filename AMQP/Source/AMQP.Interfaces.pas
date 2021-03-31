@@ -30,18 +30,18 @@ Type
     Property State : TAMQPChannelState read GetState;
 
     Procedure ExchangeDeclare( AExchangeName, AType: String; Arguments: TArguments;
-              APassive: Boolean = False; ADurable: Boolean = True; ANoWait: Boolean = False; AInternal: Boolean = false); overload;
+              const APassive: Boolean = False; const ADurable: Boolean = True; const ANoWait: Boolean = False; const AInternal: Boolean = false); overload;
     Procedure ExchangeDeclare( AExchangeName: String; AType: TExchangeType; Arguments: TArguments;
-              APassive: Boolean = False; ADurable: Boolean = True; ANoWait: Boolean = False; AInternal: Boolean = false); overload;
-    Procedure ExchangeBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean = False);
-    Procedure ExchangeUnBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean = False);
+              const APassive: Boolean = False; const ADurable: Boolean = True; const ANoWait: Boolean = False; const AInternal: Boolean = false); overload;
+    Procedure ExchangeBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean = False);
+    Procedure ExchangeUnBind(ADestination, ASource, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean = False);
 
-    Procedure ExchangeDelete( AExchangeName: String; AIfUnused: Boolean = True; ANoWait: Boolean = False );
-    Procedure QueueDeclare( AQueueName: String; Arguments: TArguments; APassive: Boolean = False; ADurable: Boolean = True; AExclusive: Boolean = False;
-                            AAutoDelete: Boolean = False; ANoWait: Boolean = False);
-    Procedure QueueBind( AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments; ANoWait: Boolean = False);
-    Procedure QueuePurge( AQueueName: String; ANoWait: Boolean = False );
-    Procedure QueueDelete( AQueueName: String; AIfUnused: Boolean = True; AIfEmpty: Boolean = True; ANoWait: Boolean = False );
+    Procedure ExchangeDelete( AExchangeName: String; const AIfUnused: Boolean = True; const ANoWait: Boolean = False );
+    Procedure QueueDeclare( AQueueName: String; Arguments: TArguments; const APassive: Boolean = False; const ADurable: Boolean = True; const AExclusive: Boolean = False;
+                            const AAutoDelete: Boolean = False; const ANoWait: Boolean = False);
+    Procedure QueueBind( AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments; const ANoWait: Boolean = False);
+    Procedure QueuePurge( AQueueName: String; const ANoWait: Boolean = False );
+    Procedure QueueDelete( AQueueName: String; const AIfUnused: Boolean = True; const AIfEmpty: Boolean = True; const ANoWait: Boolean = False );
     Procedure QueueUnBind( AQueueName, AExchangeName, ARoutingKey: String; Arguments: TArguments);
 
     Procedure BasicQOS(APrefetchSize: Cardinal; APrefetchCount: Word; AGlobal: Boolean = False);
